@@ -8,7 +8,7 @@ Allow the user to add comments for each cell from a TableView.
 
 ##                                                            WATCH THE DEMO !
 
-[Watch the DEMO](https://raw.githubusercontent.com/tygruletz/YouTubeClone/master/Demo/YouTubePreviewImage.png)
+[[Watch the DEMO](https://raw.githubusercontent.com/tygruletz/AppendCommentsToCells/master/AppendCommentsToCells/AddComments.gif)!]
 
 ## Contributors
 @ Florentin Lupascu <lupascu_florentin@yahoo.com>
