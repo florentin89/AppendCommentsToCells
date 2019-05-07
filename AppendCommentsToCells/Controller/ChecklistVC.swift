@@ -38,6 +38,13 @@ extension ChecklistVC: UITableViewDelegate, UITableViewDataSource {
         return itemSections.count
     }
     
+    // Set the header of each section
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        
+        let checklistItemCategory = itemSections[section]
+        return checklistItemCategory.name.uppercased()
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "checklistCell", for: indexPath) as! ChecklistCell
