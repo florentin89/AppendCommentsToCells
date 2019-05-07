@@ -14,6 +14,6 @@ Allow the user to add comments for each cell from a TableView.
 @ Florentin Lupascu <lupascu_florentin@yahoo.com>
 
 ## License & Copyright
-© Florentin Lupascu, YouTubeClone
+© Florentin Lupascu, AppendCommentsToCells
 
 Licensed under the [MIT License](LICENSE).
