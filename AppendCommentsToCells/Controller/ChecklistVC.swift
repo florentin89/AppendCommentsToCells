@@ -13,11 +13,10 @@ class ChecklistVC: UIViewController {
     @IBOutlet weak var questionsTableView: UITableView!
     
     //Properties
-    var vehicleCommentReceived = String()
-    var trailerCommentReceived = String()
     lazy var itemSections: [ChecklistItemSection] = {
         return ChecklistItemSection.checklistItemSections()
     }()
+    var lastIndexPath: IndexPath!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,9 +53,9 @@ extension ChecklistVC: UITableViewDelegate, UITableViewDataSource {
         cell.delegate = self
         cell.configCell(item)
         
-        cell.vehicleCommentLabel.text = "Vehicle comment: \(vehicleCommentReceived)"
+        cell.vehicleCommentLabel.text = item.vehicleComment
         
-        cell.trailerCommentLabel.text = "Trailer comment: \(trailerCommentReceived)"
+        cell.trailerCommentLabel.text = item.trailerComment
         
         return cell
     }
@@ -68,15 +67,15 @@ extension ChecklistVC: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension ChecklistVC: ChecklistCellDelegate {
-    
-    func tapGestureOnCell() {
+    func tapGestureOnCell(_ cell: ChecklistCell) {
         
-        showOptionsOnCellTapped()
+        showOptionsOnCellTapped(questionsTableView.indexPath(for: cell)!)
     }
     
-    func showOptionsOnCellTapped(){
+    func showOptionsOnCellTapped(_ indexPath: IndexPath){
         
         let addComment = UIAlertAction(title: "📝 Add Comment", style: .default) { action in
+            self.lastIndexPath = indexPath
             self.performSegue(withIdentifier: "goChecklistAddComment", sender: nil)
         }
 
@@ -105,8 +104,11 @@ extension ChecklistVC: ChecklistCellDelegate {
 extension ChecklistVC: ChecklistAddCommentDelegate {
     
     func receiveVehicleComment(vehicleComment: String?, trailerComment: String?) {
-        vehicleCommentReceived = vehicleComment ?? String()
-        trailerCommentReceived = trailerComment ?? String()
+        
+        let item = itemSections[lastIndexPath.section].checklistItems[lastIndexPath.row]
+        item.vehicleComment = vehicleComment ?? ""
+        item.trailerComment = trailerComment ?? ""
+
         questionsTableView.reloadData()
     }
     

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import UIKit
 
 class ChecklistItem {
 
@@ -15,8 +14,8 @@ class ChecklistItem {
     var line_id: Int
     var descript: String
 
-    var vehicleComment: String = String()
-    var trailerComment: String = String()
+    var vehicleComment = String()
+    var trailerComment = String()
 
     init?(templateID: Int,
           lineID: Int,

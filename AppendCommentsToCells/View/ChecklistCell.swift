@@ -9,7 +9,7 @@
 import UIKit
 
 protocol ChecklistCellDelegate {
-    func tapGestureOnCell()
+    func tapGestureOnCell(_ cell: ChecklistCell)
 }
 
 class ChecklistCell: UITableViewCell {
@@ -35,7 +35,7 @@ class ChecklistCell: UITableViewCell {
     
     // Detect when the user press Long Tap on any cell
     @objc func tapEdit(sender: UITapGestureRecognizer) {
-        delegate?.tapGestureOnCell()
+        delegate?.tapGestureOnCell(self)
     }
 
     // Config the cell for Defect and Damage Check

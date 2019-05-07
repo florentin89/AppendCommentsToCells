@@ -12,7 +12,7 @@ class ChecklistItemSection {
     
     var name: String // name of the section
     var checklistItems: [ChecklistItem] // all items from Checklist
-    
+
     init(named: String, includeChecklistItems: [ChecklistItem]) {
         
         name = named
