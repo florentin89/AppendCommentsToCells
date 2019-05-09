@@ -17,10 +17,17 @@ class ChecklistVC: UIViewController {
         return ChecklistItemSection.checklistItemSections()
     }()
     var lastIndexPath: IndexPath!
+    var selectedIndexPath: IndexPath!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        questionsTableView.reloadData()
     }
 }
 
@@ -54,15 +61,36 @@ extension ChecklistVC: UITableViewDelegate, UITableViewDataSource {
         cell.configCell(item)
         
         cell.vehicleCommentLabel.text = item.vehicleComment
-        
         cell.trailerCommentLabel.text = item.trailerComment
+        
+        cell.tagNameLabel.text = item.vehicleTags[indexPath.row]?.name
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        return 110
+        return 175
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if segue.identifier == "goChecklistAddComment" {
+            let addCommentVC = segue.destination as! ChecklistAddCommentVC
+            addCommentVC.delegate = self
+        }
+        
+        if segue.identifier == "goChecklistAddTag" {
+            let checklistAddTag = segue.destination as! ChecklistAddTagVC
+            
+            checklistAddTag.indexForSelectedRow = self.selectedIndexPath
+            
+            checklistAddTag.tagsCallback = { result in
+                print("result: \(result)")
+                let item = self.itemSections[self.lastIndexPath.section].checklistItems[self.lastIndexPath.row]
+                item.vehicleTags = result
+            }
+        }
     }
 }
 
@@ -78,10 +106,33 @@ extension ChecklistVC: ChecklistCellDelegate {
             self.lastIndexPath = indexPath
             self.performSegue(withIdentifier: "goChecklistAddComment", sender: nil)
         }
+        
+        let addTag = UIAlertAction(title: "🏷 Add Tag ⤵", style: .default) { action in
+            self.showOptionsForAddTag(indexPath)
+        }
 
         let actionSheet = configureActionSheet()
         actionSheet.addAction(addComment)
+        actionSheet.addAction(addTag)
 
+        self.present(actionSheet, animated: true, completion: nil)
+    }
+    
+    // A menu from where the user can choose to add tags for Vehicle or Trailer
+    func showOptionsForAddTag(_ indexPath: IndexPath){
+        
+        self.selectedIndexPath = indexPath
+        let addVehicleTag = UIAlertAction(title: "Add Vehicle tag", style: .default) { action in
+            self.lastIndexPath = indexPath
+            self.performSegue(withIdentifier: "goChecklistAddTag", sender: nil)
+        }
+        let addTrailerTag = UIAlertAction(title: "Add Trailer tag", style: .default) { action in
+            self.lastIndexPath = indexPath
+            self.performSegue(withIdentifier: "goChecklistAddTag", sender: nil)
+        }
+        let actionSheet = configureActionSheet()
+        actionSheet.addAction(addVehicleTag)
+        actionSheet.addAction(addTrailerTag)
         self.present(actionSheet, animated: true, completion: nil)
     }
     
@@ -110,13 +161,5 @@ extension ChecklistVC: ChecklistAddCommentDelegate {
         item.trailerComment = trailerComment ?? ""
 
         questionsTableView.reloadData()
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if segue.identifier == "goChecklistAddComment" {
-            let addCommentVC = segue.destination as! ChecklistAddCommentVC
-            addCommentVC.delegate = self
-        }
     }
 }

@@ -16,6 +16,8 @@ class ChecklistItem {
 
     var vehicleComment = String()
     var trailerComment = String()
+    var vehicleTags: [Int: Tag] = [:]
+    var trailerTags: [Int: Tag] = [:]
 
     init?(templateID: Int,
           lineID: Int,

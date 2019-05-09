@@ -18,6 +18,7 @@ class ChecklistCell: UITableViewCell {
     @IBOutlet weak var questionName: UILabel!
     @IBOutlet weak var vehicleCommentLabel: UILabel!
     @IBOutlet weak var trailerCommentLabel: UILabel!
+    @IBOutlet weak var tagNameLabel: UILabel!
     
     var delegate: ChecklistCellDelegate?
     
