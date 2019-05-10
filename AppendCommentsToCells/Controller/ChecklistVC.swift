@@ -63,14 +63,18 @@ extension ChecklistVC: UITableViewDelegate, UITableViewDataSource {
         cell.vehicleCommentLabel.text = item.vehicleComment
         cell.trailerCommentLabel.text = item.trailerComment
         
-        cell.tagNameLabel.text = item.vehicleTags[indexPath.row]?.name
+        let joinedTagNames = item.vehicleTags.map { $1.name}.joined(separator: ", ")
         
+        cell.tagNameLabel.text = joinedTagNames
+        
+        print("joinedTagNames: \(joinedTagNames)")
+
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        return 175
+        return 150
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -82,15 +86,17 @@ extension ChecklistVC: UITableViewDelegate, UITableViewDataSource {
         
         if segue.identifier == "goChecklistAddTag" {
             let checklistAddTag = segue.destination as! ChecklistAddTagVC
-            
-            checklistAddTag.indexForSelectedRow = self.selectedIndexPath
-            
-            checklistAddTag.tagsCallback = { result in
-                print("result: \(result)")
-                let item = self.itemSections[self.lastIndexPath.section].checklistItems[self.lastIndexPath.row]
-                item.vehicleTags = result
-            }
+            checklistAddTag.delegate = self
         }
+    }
+}
+
+extension ChecklistVC: ChecklistAddTagVCDelegate{
+    
+    func receiveAddedTags(tags: [Int : Tag]) {
+        
+        let item = self.itemSections[self.lastIndexPath.section].checklistItems[self.lastIndexPath.row]
+        item.vehicleTags = tags
     }
 }
 

@@ -21,7 +21,7 @@ class ChecklistItemSection {
     
     class func checklistItemSections() -> [ChecklistItemSection] {
         
-        return [vehicleCheck(), viewingScreen(), batteryUnitAndFridge()]
+        return [vehicleCheck(), viewingScreen()]
     }
     
     // Private methods
@@ -43,16 +43,5 @@ class ChecklistItemSection {
         checklistItems.append(ChecklistItem(templateID: 4, lineID: 4, descript: "Question 4")!)
         checklistItems.append(ChecklistItem(templateID: 5, lineID: 5, descript: "Question 5")!)
         return ChecklistItemSection(named: "Section 2", includeChecklistItems: checklistItems)
-    }
-    
-    private class func batteryUnitAndFridge() -> ChecklistItemSection {
-        
-        var checklistItems = [ChecklistItem]()
-        
-        checklistItems.append(ChecklistItem(templateID: 6, lineID: 6, descript: "Question 6")!)
-        checklistItems.append(ChecklistItem(templateID: 7, lineID: 7, descript: "Question 7")!)
-        checklistItems.append(ChecklistItem(templateID: 8, lineID: 8, descript: "Question 8")!)
-        checklistItems.append(ChecklistItem(templateID: 9, lineID: 9, descript: "Question 9")!)
-        return ChecklistItemSection(named: "Section 3", includeChecklistItems: checklistItems)
     }
 }

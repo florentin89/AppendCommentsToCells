@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol ChecklistAddTagVCDelegate {
+    func receiveAddedTags(tags: [Int: Tag])
+}
+
 class ChecklistAddTagVC: UIViewController {
     
     // Interface Links
@@ -15,9 +19,10 @@ class ChecklistAddTagVC: UIViewController {
     
     // Properties
     var tagsDictionary: [Int: Tag] = [:]
-    var tagsAdded: [Int:Tag] = [:]
-    var tagsCallback: (([Int:Tag]) -> ())?
-    var indexForSelectedRow: IndexPath!
+    var addedTags: [Int: Tag] = [:]
+    var delegate: ChecklistAddTagVCDelegate?
+    
+    var indexForRow: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,8 +34,6 @@ class ChecklistAddTagVC: UIViewController {
             3: Tag(remoteID: 3, categoryID: 1, name: "Tag3", colour: "orange"),
             4: Tag(remoteID: 4, categoryID: 1, name: "Tag4", colour: "black")
         ]
-        
-        print("Received index for SelectedRow: \(indexForSelectedRow ?? IndexPath())")
     }
 }
 
@@ -45,6 +48,9 @@ extension ChecklistAddTagVC: UITableViewDelegate, UITableViewDataSource {
         cell.configCell()
         cell.delegate = self
         cell.tagNameLabel.text = tagsDictionary[indexPath.row + 1]?.name.capitalized
+        
+        indexForRow = indexPath.row
+        
         return cell
     }
     
@@ -59,19 +65,30 @@ extension ChecklistAddTagVC: ChecklistAddTagCellDelegate{
     // When the user press Add Tag then will be added in a dictionary and sent to ChecklistVC using a callback closure.
     func addTagBtnPressed(button: UIButton, tagLabel: UILabel) {
         
+        let buttonPosition: CGPoint = button.convert(CGPoint.zero, to: tagsTableView)
+        let indexPath = tagsTableView.indexPathForRow(at: buttonPosition)
+        let indexPathForBtn: Int = indexPath?.row ?? 0
+        
+        let tag: Tag = tagsDictionary[indexPathForBtn + 1] ?? Tag(remoteID: 0, categoryID: 0, name: String(), colour: String())
+
         if button.currentTitle == "+"{
             button.setTitle("-", for: UIControl.State.normal)
             tagLabel.textColor = UIColor.orange
-            tagsAdded = [0: Tag(remoteID: 1, categoryID: 1, name: tagLabel.text ?? String(), colour: "red")]
-            print(tagsAdded[0]?.name ?? String())
-            tagsCallback?(tagsAdded)
+            print("Added tag: \(tag.name)")
+            addedTags[tag.remoteID] = tag
+            
+            if delegate != nil{
+                delegate?.receiveAddedTags(tags: addedTags)
+            }
         }
         else{
             button.setTitle("+", for: UIControl.State.normal)
             tagLabel.textColor = UIColor.black
-            tagsAdded.removeValue(forKey: 0)
-            print(tagsAdded)
-            tagsCallback?(tagsAdded)
+
+            //Delete tag here
+            addedTags.removeValue(forKey: tag.remoteID)
         }
+        print("\n ****** UPDATED DICTIONARY ******")
+        print(addedTags.map {"key: \($1.remoteID) - name: \($1.name)"})
     }
 }
