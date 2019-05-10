@@ -17,16 +17,13 @@ class ChecklistVC: UIViewController {
         return ChecklistItemSection.checklistItemSections()
     }()
     var lastIndexPath: IndexPath!
-    var selectedIndexPath: IndexPath!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        
         questionsTableView.reloadData()
     }
 }
@@ -63,11 +60,13 @@ extension ChecklistVC: UITableViewDelegate, UITableViewDataSource {
         cell.vehicleCommentLabel.text = item.vehicleComment
         cell.trailerCommentLabel.text = item.trailerComment
         
-        let joinedTagNames = item.vehicleTags.map { $1.name}.joined(separator: ", ")
+        let sortedTagNames = item.vehicleTags.keys.sorted(by: {$0 < $1}).compactMap({ item.vehicleTags[$0]})
+        
+        print("Sorted tag names: \(sortedTagNames.map {$0.name})")
+        
+        let joinedTagNames = sortedTagNames.map { $0.name}.joined(separator: ", ")
         
         cell.tagNameLabel.text = joinedTagNames
-        
-        print("joinedTagNames: \(joinedTagNames)")
 
         return cell
     }
@@ -85,18 +84,10 @@ extension ChecklistVC: UITableViewDelegate, UITableViewDataSource {
         }
         
         if segue.identifier == "goChecklistAddTag" {
-            let checklistAddTag = segue.destination as! ChecklistAddTagVC
-            checklistAddTag.delegate = self
+            let addTagVC = segue.destination as! ChecklistAddTagVC
+            addTagVC.delegate = self
+            addTagVC.addedTags = itemSections[lastIndexPath.section].checklistItems[lastIndexPath.row].vehicleTags
         }
-    }
-}
-
-extension ChecklistVC: ChecklistAddTagVCDelegate{
-    
-    func receiveAddedTags(tags: [Int : Tag]) {
-        
-        let item = self.itemSections[self.lastIndexPath.section].checklistItems[self.lastIndexPath.row]
-        item.vehicleTags = tags
     }
 }
 
@@ -127,13 +118,11 @@ extension ChecklistVC: ChecklistCellDelegate {
     // A menu from where the user can choose to add tags for Vehicle or Trailer
     func showOptionsForAddTag(_ indexPath: IndexPath){
         
-        self.selectedIndexPath = indexPath
+        self.lastIndexPath = indexPath
         let addVehicleTag = UIAlertAction(title: "Add Vehicle tag", style: .default) { action in
-            self.lastIndexPath = indexPath
             self.performSegue(withIdentifier: "goChecklistAddTag", sender: nil)
         }
         let addTrailerTag = UIAlertAction(title: "Add Trailer tag", style: .default) { action in
-            self.lastIndexPath = indexPath
             self.performSegue(withIdentifier: "goChecklistAddTag", sender: nil)
         }
         let actionSheet = configureActionSheet()
@@ -157,15 +146,25 @@ extension ChecklistVC: ChecklistCellDelegate {
     }
 }
 
-// Receive Comments using the Delegate
+// Receive Comments from ChecklistAddCommentVC using the Delegate Pattern
 extension ChecklistVC: ChecklistAddCommentDelegate {
     
     func receiveVehicleComment(vehicleComment: String?, trailerComment: String?) {
         
         let item = itemSections[lastIndexPath.section].checklistItems[lastIndexPath.row]
-        item.vehicleComment = vehicleComment ?? ""
-        item.trailerComment = trailerComment ?? ""
+        item.vehicleComment = vehicleComment ?? String()
+        item.trailerComment = trailerComment ?? String()
 
         questionsTableView.reloadData()
+    }
+}
+
+// Receive Tags from ChecklistAddTagVC using the Delegate Pattern
+extension ChecklistVC: ChecklistAddTagVCDelegate{
+    
+    func receiveAddedTags(tags: [Int : Tag]) {
+        
+        let item = self.itemSections[self.lastIndexPath.section].checklistItems[self.lastIndexPath.row]
+        item.vehicleTags = tags
     }
 }
